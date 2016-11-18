@@ -18,15 +18,15 @@ class Jeu{
   private $j1; // Joueur qui choisit la combinaison : IntelligenceArtificielle
   private $j2; // Joueur qui doit trouver la combinaison : Utlisateur
   private $phasesDeJeu; // Tableau qui stocke chacune des phases de jeu : PhaseDeJeu[]
-  private $gagne; // Booléen qui passe à vrai si la partie est gagnée
+  private $combinaisonTrouvee; // Booléen qui passe à vrai si la combinaison à été trouvée
 
   public function __construct($pseudo){
     //On initialise le nombre de coups à 0
     $this->nbCoups = 0;
     //On initialise le tableau contenant les phases de jeu
     $this->phasesDeJeu = array();
-    //On initialise la variable booleenne indiquant si la partie est gagnée;
-    $this->gagne = false;
+    //On initialise la variable booleenne indiquant si la combinaison a été trouvée;
+    $this->combinaisonTrouvee = false;
     //On vérifie si le pseudo correspond à un joueur existant, sinon, on lève une exception
     if(this->bd->exists($pseudo)){
       //Le pseudo correspond à un joueur existant, on peut le créer
@@ -55,19 +55,19 @@ class Jeu{
     $pionsNoirBlanc = $this->j1->getCombinaison()->comparerA($comb);
     //On créer une nouvelle phase de jeu
     $this->phasesDeJeu[count($this->phasesDeJeu)] = new phasesDeJeu($comb, $pionsNoirBlanc);
-    //On vérifie si la partie est gagnée
-    if($pionsNoirBlanc[0] == 4){
-      $this->gagne = true;
+    //On vérifie si les combinaisons sont identiques
+    if($this->j1->getCombinaison()->estIdentiqueA($comb)){
+      $this->combinaisonTrouvee = true;
     }
   }
 
   //Méthode qui renvoie un booléen qui vaut vrai si la combainaison n'a pas été trouvée et le nombre de coups est supérieur ou égal à 10
   public function estPerdue(){
-    return ($this->gagne != true && $this->nbCoups >= 10);
+    return ($this->combinaisonTrouvee != true && $this->nbCoups >= 10);
   }
-  //Méthode qui renvoie un booléen qui vaut vrai si la combainaison a été trouvée et le nombre de coups est inférieur à 10
+  //Méthode qui renvoie un booléen qui vaut vrai si la combinaison a été trouvée et le nombre de coups est inférieur à 10
   public function estGagnee(){
-    return ($this->gagne == true && $this->nbCoups <= 10);
+    return ($this->combinaisonTrouvee == true && $this->nbCoups <= 10);
   }
   //Méthode qui renvoie le nombre de coups joués
   public function getNbCoups() {
