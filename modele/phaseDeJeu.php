@@ -9,9 +9,18 @@ class PhaseDeJeu{
   }
 
   //Méthode qui retourne la combinaison entrée par le joueur lors de la phase de jeu
-  public function getCombinaison()
-  {
+  public function getCombinaison(){
     return $this->combinaison;
+  }
+  //Méthode qui retourne le nombre de pions noirs, soit le nombre de pions bien placés par le joueur
+  //Post-condition : retourne le nombre de pions noirs
+  public function getNbPionsNoirs(){
+    return $this->noirBlanc[0];
+  }
+  //Méthode qui retourne le nombre de pions blancs, soit le nombre de pions mal placés par le joueur
+  //Post-condition : retourne le nombre de pions blancs
+  public function getNbPionsBlancs(){
+    return $this->noirBlanc[1];
   }
 
 }
