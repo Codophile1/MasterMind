@@ -34,7 +34,9 @@
             }
           }else if(isset($_GET["enregistrerJeu"])){
             $this->controleurJeu->enregistrerJeu();
+            //si le joueur veut faire un nouvelle partie
           }else if(isset($_GET["nouveauJeu"])){
+            //on initialise une nouvelle partie avec le pseudo actuel
             $this->controleurJeu->nouveauJeu($_SESSION["pseudo"]);
           }
           else{
