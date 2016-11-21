@@ -1,7 +1,12 @@
 <?php
-/**
- *Controleur permettant le déroulement d'une partie : son initialisation, son enregistrement, la partie et son résultat
- */
+  /**Yanis OUAKRIM
+   * Simow WELLENREITER
+   * Group 2 
+   * Programmation web coté serveur (M3104) : Mini-Projet : Master Mind
+   */
+
+
+// Controleur permettant le déroulement d'une partie : son initialisation, son enregistrement, la partie et son résultat
 require_once("vue/Vue.php");
 require_once("modele/jeu/Jeu.php");
 require_once("modele/DAO/DAO.php");
