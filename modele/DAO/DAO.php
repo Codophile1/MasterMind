@@ -32,20 +32,20 @@ class DAO{
   // si un problème est rencontré, une exception de type TableAccesException est levée
   public function identifiantsValides($pseudo, $motDePasse){
     try{
-      $statement = $this->connexion->prepare("select * from joueurs where pseudo=?;");
+      $statement = $this->connexion->prepare("select * from joueurs where pseudo=?;");//requête préparée
       $statement->bindParam(1, $pseudoParam);
       $pseudoParam=$pseudo;
       $statement->execute();
       $result=$statement->fetch(PDO::FETCH_ASSOC);
-      if (!empty($result["pseudo"])){
-        if($result["motDePasse"] == crypt($motDePasse, $result["motDePasse"])){
-          return true;
+      if (!empty($result["pseudo"])){//si le pseudo n'est pas vide 
+        if($result["motDePasse"] == crypt($motDePasse, $result["motDePasse"])){// et si le mot de passe (chiffré) est égale au mot de passe (si le mot de passe est bon)
+          return true;//alors les identifiants sont valides 
         }else{
-          throw new MotDePasseInvalideException("Mot de passe invalide");
+          throw new MotDePasseInvalideException("Mot de passe invalide");//sinon le mot de passe n'est pas valide
         }
       }
       else{
-        throw new PseudoInexistantException("Pseudo inexistant dans la base");
+        throw new PseudoInexistantException("Pseudo inexistant dans la base");//sinon le pseudo n'existe pas, le joueur ne c'est pas inscrit
       }
     }catch(PDOException $e){
       $this->deconnexion();
@@ -54,6 +54,8 @@ class DAO{
   }
 
   //Fonction qui enregistre une partie dans la base de données
+  //Pré conditions : une partie vient de finir
+  //Post conditions : la partie est enregistrée dans la BD
   public function enregistrerJeu($jeu) {
     $pseudo = $jeu->getJoueur2->getPseudo();
     $gagnee = 0;
@@ -67,10 +69,10 @@ class DAO{
 
   }
   //Fonction qui retourne les 5 meilleurs scores et les joueurs associés
-  //pré conditions : il faut qu'il y ai au moins une partie dans la table partie (si il y en a moins que 5 la fonction affiche que les disponnibles
-  //post conditions : retourne les 5 meilleurs scores et les joueurs les ayant joués
+  //Pré conditions : il faut qu'il y ai au moins une partie dans la table partie (si il y en a moins que 5 la fonction affiche que les disponnibles
+  //Post conditions : retourne les 5 meilleurs scores et les joueurs les ayant joués
   public function getMeilleursScores() {
-    try{
+    try{//on recupère les le pseudo de le nombre de coups des 5 meilleurs parties (ou le nombre de coups est le plus bas)
       $statement=$this->connexion->query("SELECT pseudo, nombreCoups from parties ORDER BY nombreCoups DESC LIMIT 5 ");
       $i=0;
       while($partie=$statement->fetch()){
@@ -84,8 +86,8 @@ class DAO{
   }
   //Fonction qui retourne le nombre partie gagnées par un joueur
   //si le joueur n'a jamais joué retourne une exception
-  //pré-condition : le pseudo du joueur doit exister
-  //post-condition : retourne son nombre de parties gagnées
+  //Pré-condition : le pseudo du joueur doit exister
+  //Post-condition : retourne son nombre de parties gagnées
   public function getNombrePartieGagnées($pseudo){
     try{	//on cherche le total de parties gagnées par un joueur (représenté par son pseudo) et on le stock dans nbr_parties_g
       $statement = $this->connexion->prepare("SELECT SUM(partieGagnee) AS nbr_parties_g FROM parties WHERE pseudo=?;");
