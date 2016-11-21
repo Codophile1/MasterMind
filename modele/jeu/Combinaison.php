@@ -1,9 +1,9 @@
 <?php
-  /**Yanis OUAKRIM
+ /** Yanis OUAKRIM
    * Simow WELLENREITER
    * Group 2 
    * Programmation web coté serveur (M3104) : Mini-Projet : Master Mind
-   */
+  */
 
 //La Classe combinaison permet de ne pas avoir à gérer les combinaison  directement avec des tableau et ainsi de toujours avoir quatres valeurs;
 class Combinaison{
