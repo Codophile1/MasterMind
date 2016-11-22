@@ -136,26 +136,46 @@ class Combinaison{
     }
   }
 
-  //Méthode qui permet de comparer une combinaison à la combinaison actuelle
+    //Méthode qui permet de comparer une combinaison à la combinaison actuelle
   //Pré-condition : une combinaison doit être passée en paramètre
   //Post-condition : retourne un tableau contenant le nombre de pions noirs et de pions blancs
   public function comparerA($combi){
-    $comb = $combi->toArray();
+    $combProposee = $combi->toArray();
+    $combSecrete = $this->combinaison;
     //On initialise le tableau de validation qui sera retourné par la méthode
     $pionsNoirBlanc = array(0,0);
-    for ($i=0; $i < 4 ; $i++){
+    /*for ($i=0; $i < 4 ; $i++){
+      //Si le pion d'indice i de la combinaison secrete est égal au pion de même indice de la combinaison proposée
       if($this->combinaison[$i] == $comb[$i]){
         // On ajoute un pion noir
         $pionsNoirBlanc[0]++;
       }else{
+        //Sinon, on vérifie si un des pion de la combinaison secrète est égal à la combinaison proposée
         for($j=0; $j < 4 ; $j++){
-          if($this->combinaison[$j] == $comb[$i]){
+          if($this->combinaison[$i] == $comb[$j]){
             // On ajoute un pion blanc
             $pionsNoirBlanc[1]++;
           }
         }
       }
+    }*/
+    for ($i=0; $i < 4 ; $i++){
+      //Si le pion d'indice i de la combinaison secrete est égal au pion de même indice de la combinaison proposée
+      if($combSecrete[$i] == $combProposee[$i]){
+        // On ajoute un pion noir
+        $pionsNoirBlanc[0]++;
+      }
     }
+    for ($i=0; $i < 4; $i++){
+      //Sinon, on vérifie si un des pion de la combinaison secrète est égal à la combinaison proposée
+      for($j=0; $j < 4 ; $j++){
+        if($combSecrete[$i] == $combProposee[$j] && $combSecrete[$i] != $combProposee[$i]){
+          // On ajoute un pion blanc
+          $pionsNoirBlanc[1]++;
+        }
+      }
+    }
+    return $pionsNoirBlanc;
   }
 
   //Méthode qui vérifie si deux combinaisons sont identiques
