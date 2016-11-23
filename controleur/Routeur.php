@@ -1,10 +1,9 @@
 <?php
  /** Yanis OUAKRIM
    * Simow WELLENREITER
-   * Group 2 
+   * Groupe 2
    * Programmation web coté serveur (M3104) : Mini-Projet : Master Mind
  */
-
   require_once("ControleurAuthentification.php");
   require_once("ControleurJeu.php");
   class Routeur
@@ -30,19 +29,26 @@
             // On vérifie si l'utilisateur a proposé une couleur pour chacun des pions
             if(isset($_POST['pion1']) && isset($_POST['pion2']) && isset($_POST['pion3']) && isset($_POST['pion4'])){
               // On joue
-              $this->controleurJeu->jouer($_POST['pion1'], $_POST['pion2'], $_POST['pion3'], $_POST['pion4']);
+              $this->controleurJeu->jouer(intval($_POST['pion1']), intval($_POST['pion2']), intval($_POST['pion3']), intval($_POST['pion4']));
               // On affiche le jeu
-              header("Location: ?mastermind")
+              header("Location: ?mastermind");
             }
-          }else if(isset($_GET["enregistrerJeu"])){
-            $this->controleurJeu->enregistrerJeu();
-            //si le joueur veut faire un nouvelle partie
           }else if(isset($_GET["nouveauJeu"])){
-            //on initialise une nouvelle partie avec le pseudo actuel
+            // Si l'utilisateur veut faire un nouveau jeu
+            // On créé un nouveau jeu
             $this->controleurJeu->nouveauJeu($_SESSION["pseudo"]);
+            // On affiche le jeu créé
+            header("Location: ?mastermind");
+          }else if(isset($_GET["statistiques"])){
+            // Si l'utilisateur souhaite consulter les statistiques
+            $this->controleurJeu->afficherStatistiques();
+          }
+          else if(isset($_SESSION["jeu"])){
+            // On affiche la page d'accueil : le jeu
+            $this->controleurJeu->afficherJeu();
           }
           else{
-            //On affiche la page d'accueil : le jeu
+            // Si aucun jeu n'est stocké en session, on en créé un nouveau et on l'affiche
             $this->controleurJeu->nouveauJeu($_SESSION["pseudo"]);
             $this->controleurJeu->afficherJeu();
           }
