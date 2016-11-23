@@ -1,20 +1,15 @@
 <?php
- /** Yanis OUAKRIM
-   * Simow WELLENREITER
-   * Group 2 
-   * Programmation web coté serveur (M3104) : Mini-Projet : Master Mind
-  */
-
-//La Classe combinaison permet de ne pas avoir à gérer les combinaison  directement avec des tableau et ainsi de toujours avoir quatres valeurs;
+//La classe combinaison permet de ne pas avoir à gérer les combinaison directement avec des tableau et ainsi de toujours avoir quatres valeurs;
 class Combinaison{
   private $combinaison;
 
   //Constructeur qui prend en paramètre quatres valeurs.
   public function __construct($n1, $n2, $n3, $n4){
-    $combinaison[0] = $n1;
-    $combinaison[1] = $n2;
-    $combinaison[2] = $n3;
-    $combinaison[3] = $n4;
+    $this->combinaison = array();
+    $this->combinaison[0] = $n1;
+    $this->combinaison[1] = $n2;
+    $this->combinaison[2] = $n3;
+    $this->combinaison[3] = $n4;
   }
 
   //Fonction statique qui retourne une combiaison aléatoire
@@ -50,130 +45,78 @@ class Combinaison{
   public function tableauCouleur(){
     $couleurs = array();
     for ($i=0; $i < 4; $i++) {
-      switch ($this->combinaison) {
+      switch ($this->combinaison[$i]) {
         case 1:
         //Violet
-        $couleurs[i] = "violet";
+        $couleurs[$i] = "violet";
         break;
         case 2:
         //Fuschia
-        $couleurs[i] = "fuschia";
+        $couleurs[$i] = "fuschia";
         break;
         case 3:
         //Bleu
-        $couleurs[i] = "bleu";
+        $couleurs[$i] = "bleu";
         break;
         case 4:
         //Vert
-        $couleurs[i] = "vert";
+        $couleurs[$i] = "vert";
         break;
         case 5:
         //Jaune
-        $couleurs[i] = "jaune";
+        $couleurs[$i] = "jaune";
         break;
         case 6:
         //Orange
-        $couleurs[i] = "orange";
+        $couleurs[$i] = "orange";
         break;
         case 7:
         //Rouge
-        $couleurs[i] = "rouge";
+        $couleurs[$i] = "rouge";
         break;
         case 8:
         //Blanc
-        $couleurs[i] = "blanc";
+        $couleurs[$i] = "blanc";
         break;
 
         default:
         //Ne sera jamais executé
-        $couleurs[i] = "inconnue";
+        $couleurs[$i] = "inconnue";
         break;
       }
     }
-  }
-  public function toColor(){
-    $color = array();
-    for ($i=0; $i < 4; $i++) {
-      switch ($this->combinaison) {
-        case 1:
-        //Violet
-        $color[i] = "rgb(179, 16, 174)";
-        break;
-        case 2:
-        //Fuschia
-        $color[i] = "rgb(249, 64, 243)";
-        break;
-        case 3:
-        //Bleu
-        $color[i] = "rgb(50, 50, 200)";
-        break;
-        case 4:
-        //Vert
-        $color[i] = "rgb(50, 200, 50)";
-        break;
-        case 5:
-        //Jaune
-        $color[i] = "rgb(150, 150, 40)";
-        break;
-        case 6:
-        //Orange
-        $color[i] = "rgb(100, 240, 40)";
-        break;
-        case 7:
-        //Rouge
-        $color[i] = "rgb(255, 0, 0)";
-        break;
-        case 8:
-        //Blanc
-        $color[i] = "rgb(255, 255, 255)";
-        break;
-
-        default:
-        //Ne sera jamais executé
-        $color[i] = "rgb(255, 255, 255)";
-        break;
-      }
-    }
+    return $couleurs;
   }
 
-    //Méthode qui permet de comparer une combinaison à la combinaison actuelle
+  //Méthode qui permet de comparer une combinaison à la combinaison actuelle
   //Pré-condition : une combinaison doit être passée en paramètre
   //Post-condition : retourne un tableau contenant le nombre de pions noirs et de pions blancs
   public function comparerA($combi){
     $combProposee = $combi->toArray();
     $combSecrete = $this->combinaison;
+    $pionsNonTrouves = $combSecrete;
+    $pionsPropPasUtilises = $combProposee;
     //On initialise le tableau de validation qui sera retourné par la méthode
     $pionsNoirBlanc = array(0,0);
-    /*for ($i=0; $i < 4 ; $i++){
-      //Si le pion d'indice i de la combinaison secrete est égal au pion de même indice de la combinaison proposée
-      if($this->combinaison[$i] == $comb[$i]){
-        // On ajoute un pion noir
-        $pionsNoirBlanc[0]++;
-      }else{
-        //Sinon, on vérifie si un des pion de la combinaison secrète est égal à la combinaison proposée
-        for($j=0; $j < 4 ; $j++){
-          if($this->combinaison[$i] == $comb[$j]){
-            // On ajoute un pion blanc
-            $pionsNoirBlanc[1]++;
-          }
-        }
-      }
-    }*/
     for ($i=0; $i < 4 ; $i++){
       //Si le pion d'indice i de la combinaison secrete est égal au pion de même indice de la combinaison proposée
       if($combSecrete[$i] == $combProposee[$i]){
         // On ajoute un pion noir
         $pionsNoirBlanc[0]++;
+        unset($pionsNonTrouves[$i]);
+        unset($pionsPropPasUtilises[$i]);
       }
     }
-    for ($i=0; $i < 4; $i++){
-      //Sinon, on vérifie si un des pion de la combinaison secrète est égal à la combinaison proposée
-      for($j=0; $j < 4 ; $j++){
-        if($combSecrete[$i] == $combProposee[$j] && $combSecrete[$i] != $combProposee[$i]){
+    foreach($pionsPropPasUtilises as $pionProposePasUtilise){
+        //Si le pion proposé d'indice $i appartient quand même à la combinaison secrète (privée des pion déjà trouvés)
+        if(in_array($pionProposePasUtilise, $pionsNonTrouves)){
           // On ajoute un pion blanc
           $pionsNoirBlanc[1]++;
+          // On retire le pion qui a été partiellement trouvé de la liste des pions qu'il reste à trouver
+          unset($pionsNonTrouves[array_search($pionProposePasUtilise, $pionsNonTrouves)]);
+          // On retire le pion qui correspond à un des pions de couleur de la liste des pions poposés non utilisés
+          unset($pionsPropPasUtilises[array_search($pionProposePasUtilise, $pionsPropPasUtilises)]);
         }
-      }
     }
     return $pionsNoirBlanc;
   }
