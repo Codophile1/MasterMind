@@ -1,10 +1,9 @@
 <?php
- /** Yanis OUAKRIM
+/** Yanis OUAKRIM
    * Simow WELLENREITER
-   * Group 2 
+   * Group 2
    * Programmation web coté serveur (M3104) : Mini-Projet : Master Mind
   */
-
 require_once("modele/DAO/DAO.php");
 require_once("vue/Vue.php");
 class ControleurAuthentification {
@@ -33,14 +32,14 @@ class ControleurAuthentification {
 		}
 		return $this->estConnecte();
 	}
-	//Precondition : l'utilisateur est connecté
+	//Pré-condition : l'utilisateur est connecté
 	//Post-condition :  les variables de session sont détruites
 	public function deconnexion() {
 		session_destroy();
 	}
 
 	//Méthode qui vérifie si l'utilisateur est connecté
-	//Post-condition : renvoie un boolean qui vaut vrai si l'utilisateur est connecté et faux s'il n'est pas connecté
+	//Post-condition : renvoie un booléen qui vaut vrai si l'utilisateur est connecté et faux s'il n'est pas connecté
 	public function estConnecte(){
 		return isset($_SESSION["pseudo"]);
 	}
