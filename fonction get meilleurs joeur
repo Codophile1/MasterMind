@@ -1,0 +1,14 @@
+  public function getMeilleursJoueurs(){
+    try{
+      $statement=$this->connexion->query("SELECT pseudo , sum(partieGagnee) AS nbr_partie_win FROM parties GROUP BY pseudo ORDER BY nbr_partie_win DESC LIMIT 5  ");
+      $i=0;
+      while($partie=$statement->fetch()){
+        $result[$i]=array($partie['nbr_partie_win']);
+        $i++;
+      }
+      return($result);
+    }
+    catch(PDOException $e){
+      throw new TableAccesException("problème avec la table partie");
+    }
+  }
