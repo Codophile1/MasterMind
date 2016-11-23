@@ -1,9 +1,9 @@
 <?php
- /** Yanis OUAKRIM
-   * Simow WELLENREITER
-   * Group 2 
-   * Programmation web coté serveur (M3104) : Mini-Projet : Master Mind
-  */
+/** Yanis OUAKRIM
+* Simow WELLENREITER
+* Group 2
+* Programmation web coté serveur (M3104) : Mini-Projet : Master Mind
+*/
 require_once("modele/exceptions/PseudoInexistantException.php");
 require_once("modele/exceptions/MotDePasseInvalideException.php");
 require_once("modele/exceptions/ConnexionException.php");
@@ -13,7 +13,6 @@ class DAO{
 
   // Constructeur de la classe
   // Initialise la connexion et renvoie une ConnexionException en cas d'echec de la connexion à la base de donnée
-
   public function __construct(){
     try{
       $chaine="mysql:host=localhost;dbname=E155890W";
@@ -27,61 +26,68 @@ class DAO{
   }
 
 
-  // méthode qui permet de fermer la connexion
+  // Méthode qui permet de fermer la connexion
+  // Post-condition : la connexion est fermée
   public function deconnexion(){
     $this->connexion=null;
   }
 
-  // vérifie qu'un pseudo existe dans la table joueurs
-  // post-condition retourne vrai si le pseudo existe sinon faux
-  // si un problème est rencontré, une exception de type TableAccesException est levée
+  // Méthode qui vérifie qu'un pseudo existe dans la table joueurs et son son mot de passe est correct
+  // Post-condition retourne vrai si les identifiants sonnt valides
+  // Si un problème est rencontré, une exception de type TableAccesException est levée
   public function identifiantsValides($pseudo, $motDePasse){
     try{
-      $statement = $this->connexion->prepare("select * from joueurs where pseudo=?;");//requête préparée
-      $statement->bindParam(1, $pseudoParam);
+      $statement = $this->connexion->prepare("select * from joueurs where pseudo=?;");
       $pseudoParam=$pseudo;
+      $statement->bindParam(1, $pseudoParam);
       $statement->execute();
       $result=$statement->fetch(PDO::FETCH_ASSOC);
-      if (!empty($result["pseudo"])){//si le pseudo n'est pas vide 
-        if($result["motDePasse"] == crypt($motDePasse, $result["motDePasse"])){// et si le mot de passe (chiffré) est égale au mot de passe (si le mot de passe est bon)
-          return true;//alors les identifiants sont valides 
+      if (!empty($result["pseudo"])){
+        // Si le résultat retourné n'est pas vide, on verifie si le mot de passe entré correspond au mot de passe de l'utilisateur
+        if($result["motDePasse"] == crypt($motDePasse, $result["motDePasse"])){
+          // Si les mots de passe correspondent, on retourne vrai
+          return true;
         }else{
-          throw new MotDePasseInvalideException("Mot de passe invalide");//sinon le mot de passe n'est pas valide
+          // Sinon, on lance une MotDePasseInvalideException
+          throw new MotDePasseInvalideException("Mot de passe invalide");
         }
       }
       else{
-        throw new PseudoInexistantException("Pseudo inexistant dans la base");//sinon le pseudo n'existe pas, le joueur ne c'est pas inscrit
+        // Si le résultat retourné est vide, on lance une exception de type PseudoInexistantException
+        throw new PseudoInexistantException("Pseudo inexistant dans la base");
       }
     }catch(PDOException $e){
+      // Si une PDOException est attrapée, on lance une TableAccesException
       $this->deconnexion();
-      throw new TableAccesException("problème avec la table pseudonyme");
+      throw new TableAccesException("Problème avec la table pseudonyme");
     }
   }
 
-  //Fonction qui enregistre une partie dans la base de données
-  //Pré conditions : une partie vient de finir
-  //Post conditions : la partie est enregistrée dans la BD
+  // Méthode enregistre une partie dans la base de données
+  // Pré-condition : un jeu est passé en paramètre
+  // Post-condition : le jeu est enregistré dans la table "parties" de la base de donnée
   public function enregistrerJeu($jeu) {
-    $pseudo = $jeu->getJoueur2->getPseudo();
+    $pseudo = $jeu->getJoueur2()->getPseudo();
     $gagnee = 0;
-    if ($jeu->estGagnee()) {
+    if ($jeu->estGagne()) {
       $gagnee = 1;
     }
-    $statement = $this->connexion->prepare("INSERT INTO parties(pseudo, partieGagnee, nbCoups) VALUES(:pseudo, :gagnee, :nbCoups)");
+    $statement = $this->connexion->prepare("INSERT INTO parties(pseudo, partieGagnee, nombreCoups) VALUES(:pseudo, :gagnee, :nbCoups)");
     $statement->execute(array("pseudo"=>$pseudo,
     "gagnee" => $gagnee,
     "nbCoups" => $jeu->getNbCoups()));
 
   }
-  //Fonction qui retourne les 5 meilleurs scores et les joueurs associés
-  //Pré conditions : il faut qu'il y ai au moins une partie dans la table partie (si il y en a moins que 5 la fonction affiche que les disponnibles
-  //Post conditions : retourne les 5 meilleurs scores et les joueurs les ayant joués
+  // Méthode qui retourne les 5 meilleurs scores et les joueurs associés
+  // Pré-condition : il faut qu'il y ai au moins une partie dans la table partie (si il y en a moins que 5 la fonction affiche que les disponnibles
+  // Post-condition : retourne les 5 meilleurs scores et les joueurs les ayant joués
   public function getMeilleursScores() {
-    try{//on recupère les le pseudo de le nombre de coups des 5 meilleurs parties (ou le nombre de coups est le plus bas)
-      $statement=$this->connexion->query("SELECT pseudo, nombreCoups from parties ORDER BY nombreCoups DESC LIMIT 5 ");
+    try{
+      $statement=$this->connexion->query("SELECT pseudo, nombreCoups from parties ORDER BY nombreCoups LIMIT 5 ");
       $i=0;
       while($partie=$statement->fetch()){
         $result[$i]=array($partie['pseudo'],$partie['nombreCoups']);
+        $i++;
       }
       return($result);
     }
@@ -89,22 +95,25 @@ class DAO{
       throw new TableAccesException("problème avec la table partie");
     }
   }
-  //Fonction qui retourne le nombre partie gagnées par un joueur
-  //si le joueur n'a jamais joué retourne une exception
-  //Pré-condition : le pseudo du joueur doit exister
-  //Post-condition : retourne son nombre de parties gagnées
+  // Méthode qui retourne le nombre partie gagnées par un joueur
+  // Si le joueur n'a jamais joué retourne une exception
+  // Pré-condition : le pseudo du joueur doit exister
+  // Post-condition : retourne son nombre de parties gagnées
   public function getNombrePartieGagnées($pseudo){
-    try{	//on cherche le total de parties gagnées par un joueur (représenté par son pseudo) et on le stock dans nbr_parties_g
+    try{
+      // On cherche le total de parties gagnées par un joueur (représenté par son pseudo) et on le stock dans nbr_parties_g
       $statement = $this->connexion->prepare("SELECT SUM(partieGagnee) AS nbr_parties_g FROM parties WHERE pseudo=?;");
       $statement->bindParam(1, $pseudoParam);
       $pseudoParam=$pseudo;
       $statement->execute();
       $result=$statement->fetch(PDO::FETCH_ASSOC);
 
-      if ($result["nbr_parties_g"]==NUll){//si le joueur n'a pas encore fait de partie on balance une exception
+      if ($result["nbr_parties_g"]==NUll){
+        // Si le joueur n'a pas encore fait de partie on balance une exception
         throw new PasDePartieException("Ce joueur n'a pas encore joué de parties");
       }
-      else{//sinon on retourne nbr_parties_g (nbr de partie gagnées
+      else{
+        // Sinon on retourne nbr_parties_g (nbr de partie gagnées)
         return $result["nbr_parties_g"];
       }
     }
@@ -113,6 +122,23 @@ class DAO{
       throw new TableAccesException("problème avec la table partie");
     }
 
+  }
+  // Méthode qui renvoie les 5 joueurs ayant remporté le plus grand nombre de parties
+  // Pré-condition : Il doit y a v avoir au moins un joueur dans la table parties
+  // Post-condition : renvoie un tableau de joueurs avec le nombre de parties qu'ils ont gagnées
+  public function getMeilleursJoueurs(){
+    try{
+      $statement=$this->connexion->query("SELECT pseudo , sum(partieGagnee) AS nbr_partie_win FROM parties GROUP BY pseudo ORDER BY nbr_partie_win DESC LIMIT 5  ");
+      $i=0;
+      while($partie=$statement->fetch()){
+        $result[$i]=array($partie['nbr_partie_win']);
+        $i++;
+      }
+      return($result);
+    }
+    catch(PDOException $e){
+      throw new TableAccesException("problème avec la table partie");
+    }
   }
 }
 ?>
