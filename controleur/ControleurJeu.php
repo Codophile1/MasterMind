@@ -45,7 +45,7 @@ class ControleurJeu
   // Méthode permettant d'afficher la vue des statistiques
   // Post-condition : les statistiques sont affichées
   public function afficherStatistiques(){
-    $this->vue->statistiques($this->DAO->getMeilleursScores());
+    $this->vue->statistiques($this->DAO->getMeilleursScores(), $this->DAO->getMeilleursJoueurs());
   }
   // Méthode permettant d'afficher la vue du jeu
   // Post-condition : le jeu est affiché
