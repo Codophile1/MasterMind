@@ -190,7 +190,7 @@
     <?php
   }
 
-  public function statistiques($scores, $meilleursJoueurs){
+  public function statistiques($scores, $meilleursJoueurs,$ratio){
     ?>
     <!doctype html>
     <html>
@@ -232,6 +232,10 @@
                 }
                ?>
             </table>
+          </div>
+          <div>
+          <h2>Parties gagnées</h2>
+          <?php $ratio ?>
           </div>
         </div>
       </body>
