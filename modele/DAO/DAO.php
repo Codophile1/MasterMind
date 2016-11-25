@@ -133,13 +133,13 @@ class DAO{
       $statement->execute();
       $result=$statement->fetch(PDO::FETCH_ASSOC);
 
-      if ($result["nbr_parties_g"]==NUll){
+      if ($result["nbr_parties_j"]==NUll){
         // Si le joueur n'a pas encore fait de partie on balance une exception
         throw new PasDePartieException("Ce joueur n'a pas encore joué de parties");
       }
       else{
-        // Sinon on retourne nbr_parties_g (nbr de partie gagnées)
-        return $result["nbr_parties_g"];
+        // Sinon on retourne nbr_parties_j (nbr de partie gagnées)
+        return $result["nbr_parties_j"];
       }
     }
     catch(PDOException $e){
