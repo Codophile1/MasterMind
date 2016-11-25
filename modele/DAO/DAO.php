@@ -123,6 +123,31 @@ class DAO{
     }
 
   }
+  
+  public function getNombrePartieJouées($pseudo){
+    try{
+      // On cherche le total de parties gagnées par un joueur (représenté par son pseudo) et on le stock dans nbr_parties_g
+      $statement = $this->connexion->prepare("SELECT COUNT(pseudo) AS nbr_parties_j FROM parties WHERE pseudo=?;");
+      $statement->bindParam(1, $pseudoParam);
+      $pseudoParam=$pseudo;
+      $statement->execute();
+      $result=$statement->fetch(PDO::FETCH_ASSOC);
+
+      if ($result["nbr_parties_g"]==NUll){
+        // Si le joueur n'a pas encore fait de partie on balance une exception
+        throw new PasDePartieException("Ce joueur n'a pas encore joué de parties");
+      }
+      else{
+        // Sinon on retourne nbr_parties_g (nbr de partie gagnées)
+        return $result["nbr_parties_g"];
+      }
+    }
+    catch(PDOException $e){
+      $this->deconnexion();
+      throw new TableAccesException("problème avec la table partie");
+    }
+
+  }
   // Méthode qui renvoie les 5 joueurs ayant remporté le plus grand nombre de parties
   // Pré-condition : Il doit y a v avoir au moins un joueur dans la table parties
   // Post-condition : renvoie un tableau de joueurs avec le nombre de parties qu'ils ont gagnées
